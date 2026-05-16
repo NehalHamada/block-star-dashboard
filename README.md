@@ -1,16 +1,87 @@
-# React + Vite
+#  Block Star Dashboard - لوحة تحكم بلوك ستار
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+لوحة تحكم متكاملة واحترافية لإدارة متجر ومنصة "بلوك ستار"، مصممة بأحدث تقنيات الويب لضمان أداء استثنائي وتجربة مستخدم متميزة.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+##  المميزات الرئيسية (Core Features)
 
-## React Compiler
+###  إدارة المتجر (Store Management)
+- **إدارة الفئات**: نظام متكامل لإدارة الأقسام الرئيسية والفرعية.
+- **إدارة المنتجات**: التحكم الكامل في عرض المنتجات، أنواع الخشب، والمواصفات الفنية.
+- **إدارة الطلبات**: تتبع ومعالجة طلبات العملاء بشكل لحظي.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+###  إدارة الشحن (Shipping Logistics)
+- **التحكم في تكاليف الشحن**: إدارة مناطق الشحن وتحديد التكلفة لكل محافظة/منطقة بشكل منفصل.
+- **دعم اللغات المزدوج (Dual Language)**: جلب وعرض أسماء المناطق باللغتين العربية والإنجليزية في آن واحد عبر تقنية `Accept-Language`.
 
-## Expanding the ESLint configuration
+###  إدارة المستخدمين (User Management)
+- **قائمة المستخدمين**: تتبع بيانات العملاء، أدوارهم (Admin/User)، ونشاطهم.
+- **آراء المستخدمين**: مراجعة وتقييم تعليقات العملاء على المنتجات.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+###  طلبات الشركات (B2B)
+- **خدمات الشركاء**: إدارة الخدمات المقدمة للشركات والجهات التجارية.
+- **ميزات الشركات**: عرض وإدارة الميزات المخصصة لطلبات الشركات.
+- **تتبع الطلبات**: نظام مخصص لمعالجة طلبات المؤسسات.
+
+###  إدارة المحتوى (CMS)
+- **صفحة من نحن**: التحكم في المحتوى التعريفي للمنصة.
+- **بيانات التواصل**: إدارة أرقام الهواتف، العناوين، وروابط التواصل.
+- **الرسائل الواردة**: استقبال ومعالجة رسائل العملاء من نموذج "اتصل بنا".
+
+###  التسويق والترويج (Marketing)
+- **نظام الكوبونات**: إنشاء وإدارة أكواد الخصم وتحديد نسب التوفير.
+- **اللوحات الفنية الخاصة**: قسم مخصص لإدارة اللوحات والقطع الفنية الفريدة.
+
+---
+
+##  التكنولوجيا المستخدمة (Tech Stack)
+
+### Core
+- **React 19**: أحدث إصدار من مكتبة ريأكت لأداء أسرع وميزات برمجية متطورة.
+- **Vite**: أداة بناء وتطوير فائقة السرعة.
+
+### State Management
+- **TanStack Query v5 (React Query)**: لإدارة جلب البيانات (Server State)، التخزين المؤقت (Caching)، والتحديث اللحظي.
+- **Zustand**: لإدارة الحالة العالمية للواجهة (UI State) بشكل خفيف وفعال.
+
+### Styling & UI/UX
+- **Tailwind CSS v4**: لتصميم واجهات عصرية ومتجاوبة بالكامل.
+- **Framer Motion**: لإضافة حركات انسيابية وميكرو-أنيميشن (Micro-animations) تزيد من حيوية الموقع.
+- **Lucide React**: حزمة أيقونات عصرية وبسيطة.
+
+### Forms & Validation
+- **React Hook Form**: لإدارة النماذج بأداء عالٍ.
+- **Zod**: للتحقق من صحة البيانات (Validation Schemas) وضمان أمان المدخلات.
+
+---
+
+##  معايير التطوير (Development Standards)
+
+- **Mobile-First Design**: الواجهة متجاوبة بالكامل وتعمل بكفاءة على جميع أحجام الشاشات.
+- **Clean Architecture**: فصل منطق العمل (Logic) في Custom Hooks وإبقاء المكونات (Components) للعرض فقط.
+- **API Optimization**: تقليل عدد الطلبات للسيرفر وتحسين استهلاك البيانات.
+- **Premium Aesthetics**: استخدام درجات الألوان المتناسقة، الظلال الناعمة، والـ Popups المخصصة بدلاً من النوافذ التقليدية.
+
+---
+
+##  التشغيل (Setup)
+
+1. **تثبيت المكتبات**:
+   ```bash
+   npm install
+   ```
+
+2. **تشغيل وضع التطوير**:
+   ```bash
+   npm run dev
+   ```
+
+3. **بناء النسخة النهائية**:
+   ```bash
+   npm run build
+   ```
+
+---
+
+*صُنع بكل ❤️ لدعم نجاح مشروع بلوك ستار.*

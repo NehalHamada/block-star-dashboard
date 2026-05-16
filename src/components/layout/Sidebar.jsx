@@ -28,6 +28,7 @@ import {
   Briefcase,
   Sparkles,
   ClipboardList,
+  Truck,
 } from "lucide-react";
 
 import { useState, useRef, useEffect } from "react";
@@ -65,6 +66,11 @@ const SIDEBAR_ITEMS = [
       { name: "الطلبات", icon: ShoppingCart, path: "/orders" },
       { name: "أنواع المنتجات والخشب", icon: TreePine, path: "/product-types" },
     ],
+  },
+  {
+    name: "التحكم في سعر الشحن",
+    icon: Truck,
+    path: "/shipping",
   },
   {
     name: "المستخدمين",
