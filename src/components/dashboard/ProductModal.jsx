@@ -56,6 +56,8 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
   const [newSpecValEn, setNewSpecValEn] = useState("");
   const [newColorName, setNewColorName] = useState("");
   const [newColorHex, setNewColorHex] = useState("#D97706");
+  const [newColorImage, setNewColorImage] = useState(null);
+  const [newColorImagePreview, setNewColorImagePreview] = useState(null);
   const [newSizeName, setNewSizeName] = useState("");
   const [newSizeDim, setNewSizeDim] = useState("");
 
@@ -108,7 +110,7 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
       features_en: Array.isArray(d?.features_en) ? d.features_en : [],
       specifications: specsArr,
       specifications_en: Array.isArray(d?.specifications_en) ? d.specifications_en : [],
-      colors: d?.colors?.map((c) => ({ name: c.name, hex_code: c.hex_code })) || [],
+      colors: d?.colors?.map((c) => ({ name: c.name, hex_code: c.hex_code, image_path: c.image_path, order: c.order })) || [],
       sizes: d?.sizes?.map((s) => ({ size_name: s.size_name, dimensions: s.dimensions || "" })) || [],
     });
   }, [initialData, reset, productTypes.length, woodTypes.length]);
@@ -136,7 +138,15 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
   const handleAddFeatureEn = () => { if (newFeatureEn.trim()) { addFeatEn(newFeatureEn.trim()); setNewFeatureEn(""); } };
   const handleAddSpec = () => { if (newSpecKey.trim() && newSpecVal.trim()) { addSpec({ key: newSpecKey.trim(), value: newSpecVal.trim() }); setNewSpecKey(""); setNewSpecVal(""); } };
   const handleAddSpecEn = () => { if (newSpecKeyEn.trim() && newSpecValEn.trim()) { addSpecEn({ key: newSpecKeyEn.trim(), value: newSpecValEn.trim() }); setNewSpecKeyEn(""); setNewSpecValEn(""); } };
-  const handleAddColor = () => { if (newColorName.trim()) { addColor({ name: newColorName.trim(), hex_code: newColorHex }); setNewColorName(""); setNewColorHex("#D97706"); } };
+  const handleAddColor = () => { 
+    if (newColorName.trim()) { 
+      addColor({ name: newColorName.trim(), hex_code: newColorHex, image_path: newColorImage, order: colorFields.length }); 
+      setNewColorName(""); 
+      setNewColorHex("#D97706"); 
+      setNewColorImage(null);
+      setNewColorImagePreview(null);
+    } 
+  };
   const handleAddSize = () => { if (newSizeName.trim()) { addSize({ size_name: newSizeName.trim(), dimensions: newSizeDim.trim() }); setNewSizeName(""); setNewSizeDim(""); } };
 
   // ── Submit ─────────────────────────────────────────────────────────────────
@@ -232,7 +242,16 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
                 control={control}
                 colorFields={colorFields}
                 newColorName={newColorName} newColorHex={newColorHex}
+                newColorImagePreview={newColorImagePreview}
                 onNewColorName={setNewColorName} onNewColorHex={setNewColorHex}
+                onNewColorImage={(file) => {
+                  setNewColorImage(file);
+                  if (file) {
+                    setNewColorImagePreview(URL.createObjectURL(file));
+                  } else {
+                    setNewColorImagePreview(null);
+                  }
+                }}
                 onAddColor={handleAddColor} onRemoveColor={removeColor}
                 sizeFields={sizeFields}
                 newSizeName={newSizeName} newSizeDim={newSizeDim}

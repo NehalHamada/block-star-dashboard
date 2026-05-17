@@ -64,6 +64,10 @@ function buildFormData(data) {
   (data.colors || []).forEach((c, i) => {
     fd.append(`colors[${i}][name]`, c.name || "");
     fd.append(`colors[${i}][hex_code]`, c.hex_code || "");
+    if (c.image_path instanceof File) {
+      fd.append(`colors[${i}][image_path]`, c.image_path);
+    }
+    fd.append(`colors[${i}][order]`, c.order !== undefined ? c.order : i);
   });
 
   // Sizes — indexed array with size_name + dimensions

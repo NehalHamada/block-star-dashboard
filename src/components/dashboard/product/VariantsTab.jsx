@@ -27,8 +27,8 @@ const Label = ({ children }) => (
  */
 const VariantsTab = memo(({
   control,
-  colorFields, newColorName, newColorHex,
-  onNewColorName, onNewColorHex, onAddColor, onRemoveColor,
+  colorFields, newColorName, newColorHex, newColorImagePreview,
+  onNewColorName, onNewColorHex, onNewColorImage, onAddColor, onRemoveColor,
   sizeFields, newSizeName, newSizeDim,
   onNewSizeName, onNewSizeDim, onAddSize, onRemoveSize,
 }) => (
@@ -36,12 +36,12 @@ const VariantsTab = memo(({
     {/* Colors */}
     <div>
       <SectionLabel label="الألوان" icon={Palette} />
-      <div className="flex gap-2 mb-3 items-center">
+      <div className="flex gap-2 mb-3 items-center flex-wrap">
         <input
           value={newColorName}
           onChange={(e) => onNewColorName(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onAddColor(); } }}
-          className={inputCls() + " flex-1 text-black"}
+          className={inputCls() + " flex-1 text-black min-w-[200px]"}
           placeholder="اسم اللون (مثال: بني غامق)"
         />
         <div className="flex items-center gap-1.5">
@@ -49,14 +49,32 @@ const VariantsTab = memo(({
             type="color"
             value={newColorHex}
             onChange={(e) => onNewColorHex(e.target.value)}
-            className="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer p-0.5 text-black"
+            className="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer p-0.5 text-black shrink-0"
           />
-          <span className="text-xs text-gray-400 w-16">{newColorHex}</span>
+          <span className="text-xs text-gray-400 w-16 shrink-0">{newColorHex}</span>
         </div>
+        
+        <div className="relative shrink-0">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => onNewColorImage(e.target.files[0] || null)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            title="اختر صورة للون"
+          />
+          <div className={`w-10 h-10 rounded-xl border flex items-center justify-center overflow-hidden transition-colors ${newColorImagePreview ? 'border-secondary' : 'border-gray-200 bg-gray-50 hover:bg-gray-100'}`}>
+            {newColorImagePreview ? (
+              <img src={newColorImagePreview} alt="Preview" className="w-full h-full object-cover" />
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            )}
+          </div>
+        </div>
+
         <button
           type="button"
           onClick={onAddColor}
-          className="px-4 py-2.5 bg-secondary text-white rounded-xl hover:opacity-90 transition-colors"
+          className="px-4 py-2.5 bg-secondary text-white rounded-xl hover:opacity-90 transition-colors shrink-0"
         >
           <Plus size={18} />
         </button>
@@ -68,22 +86,30 @@ const VariantsTab = memo(({
               key={field.id}
               control={control}
               name={`colors.${i}`}
-              render={({ field: f }) => (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full text-sm bg-white shadow-sm">
-                  <span
-                    className="w-4 h-4 rounded-full border border-gray-200 shadow-inner"
-                    style={{ backgroundColor: f.value.hex_code }}
-                  />
-                  {f.value.name}
-                  <button
-                    type="button"
-                    onClick={() => onRemoveColor(i)}
-                    className="text-gray-300 hover:text-red-500 transition-colors"
-                  >
-                    <X size={12} />
-                  </button>
-                </span>
-              )}
+              render={({ field: f }) => {
+                const imgUrl = f.value.image_path instanceof File 
+                  ? URL.createObjectURL(f.value.image_path) 
+                  : f.value.image_path;
+                return (
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-full text-sm bg-white shadow-sm">
+                    {imgUrl && (
+                      <img src={imgUrl} alt={f.value.name} className="w-5 h-5 rounded-full object-cover border border-gray-200" />
+                    )}
+                    <span
+                      className="w-4 h-4 rounded-full border border-gray-200 shadow-inner"
+                      style={{ backgroundColor: f.value.hex_code }}
+                    />
+                    {f.value.name}
+                    <button
+                      type="button"
+                      onClick={() => onRemoveColor(i)}
+                      className="text-gray-300 hover:text-red-500 transition-colors"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                );
+              }}
             />
           ))}
         </div>

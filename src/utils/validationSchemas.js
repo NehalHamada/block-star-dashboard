@@ -52,7 +52,14 @@ export const productSchema = z.object({
     .optional()
     .default([]),
   colors: z
-    .array(z.object({ name: z.string(), hex_code: z.string() }))
+    .array(
+      z.object({
+        name: z.string(),
+        hex_code: z.string(),
+        image_path: z.any().optional(),
+        order: z.number().optional()
+      })
+    )
     .optional()
     .default([]),
   sizes: z
