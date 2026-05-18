@@ -8,6 +8,7 @@ const ORDER_STATUS = {
   pending: { label: "قيد الانتظار", color: "bg-yellow-100 text-yellow-700" },
   confirmed: { label: "تم التأكيد", color: "bg-indigo-100 text-indigo-700" },
   processing: { label: "قيد المعالجة", color: "bg-purple-100 text-purple-700" },
+  in_progress: { label: "قيد المعالجة", color: "bg-purple-100 text-purple-700" }, // RATIONALE: Map backend 'in_progress' status to Arabic translation to prevent fallback rendering in English.
   ready: { label: "جاهز للشحن", color: "bg-cyan-100 text-cyan-700" },
   shipped: { label: "تم الشحن", color: "bg-orange-100 text-orange-700" },
   delivered: { label: "تم التسليم", color: "bg-green-100 text-green-700" },
@@ -339,33 +340,64 @@ const OrderModal = ({ order, onClose, onStatusUpdated }) => {
             المنتجات
           </p>
           <div className="space-y-3">
-            {order.items.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl"
-              >
-                <img
-                  src={item.product?.main_image}
-                  alt={item.product_name}
-                  className="w-14 h-14 object-cover rounded-lg flex-shrink-0 bg-gray-100"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">
-                    {item.product_name}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    الكمية: {item.quantity} ×{" "}
-                    {parseFloat(item.price).toLocaleString()} ر.س
+            {order.items.map((item, idx) => {
+              const color = item.product?.color;
+              // RATIONALE: We keep the main product image as is to retain brand/item baseline recognition, while rendering the chosen color swatch and color representation image separately if selected by the customer.
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 border border-gray-100 rounded-xl bg-white hover:border-gray-200 transition-all"
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <img
+                      src={item.product?.main_image}
+                      alt={item.product_name}
+                      className="w-14 h-14 object-cover rounded-lg flex-shrink-0 bg-gray-100 border border-gray-100"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {item.product_name}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        الكمية: {item.quantity} ×{" "}
+                        {parseFloat(item.price).toLocaleString()} ر.س
+                      </p>
+                      
+                      {color && (
+                        <div className="mt-2 flex flex-wrap items-center gap-3 bg-gray-50 border border-gray-100 rounded-lg px-2 py-1.5 w-fit">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className="w-3.5 h-3.5 rounded-full border border-gray-300 shadow-sm flex-shrink-0"
+                              style={{ backgroundColor: color.hex_code }}
+                            />
+                            <span className="text-xs font-medium text-gray-700">
+                              اللون: {color.name && color.name !== color.hex_code ? color.name : color.hex_code}
+                            </span>
+                          </div>
+                          {color.image_path && (
+                            <div className="flex items-center gap-2 border-r border-gray-200 pr-2.5 mr-1">
+                              <span className="text-[10px] text-gray-400 font-semibold">صورة اللون:</span>
+                              <img
+                                src={color.image_path}
+                                alt="Color representation"
+                                className="w-8 h-8 object-cover rounded border border-gray-200 shadow-sm hover:scale-110 transition-transform cursor-pointer"
+                                onClick={() => window.open(color.image_path, "_blank", "noopener,noreferrer")}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-sm font-semibold text-secondary whitespace-nowrap self-end sm:self-center">
+                    {parseFloat(item.item_total).toLocaleString()} ر.س
                   </p>
                 </div>
-                <p className="text-sm font-semibold text-secondary whitespace-nowrap">
-                  {parseFloat(item.item_total).toLocaleString()} ر.س
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

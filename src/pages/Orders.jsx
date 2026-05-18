@@ -59,7 +59,62 @@ const OrdersTable = memo(({ orders, onOpen, loadingId }) => (
             <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
               {new Date(order.created_at).toLocaleDateString("ar-EG")}
             </td>
-            <td className="px-4 py-3 text-center text-gray-600">{order.items_count}</td>
+            <td className="px-4 py-3">
+              <div className="flex flex-col gap-1.5 items-center justify-center min-w-[120px]">
+                {order.items && order.items.length > 0 ? (
+                  <div className="flex -space-x-2 space-x-reverse justify-center items-center">
+                    {order.items.slice(0, 3).map((item, idx) => {
+                      const color = item.product?.color;
+                      // RATIONALE: Keep the main product image exactly as is as the baseline visual, and overlap the custom color-specific image and swatch on the side so the merchant has complete visual awareness instantly from the table row.
+                      return (
+                        <div key={idx} className="flex items-center relative group/item z-10 hover:z-20">
+                          {/* Product main image (Exactly as is) */}
+                          <div className="relative">
+                            <img
+                              src={item.product?.main_image}
+                              alt={item.product_name}
+                              className="w-9 h-9 rounded-full border-2 border-white shadow-sm object-cover bg-gray-50 hover:scale-105 transition-transform"
+                              onError={(e) => {
+                                e.target.src = "https://placehold.co/100x100?text=Product";
+                              }}
+                            />
+                            {color && (
+                              <span
+                                className="absolute -bottom-0.5 -left-0.5 w-3.5 h-3.5 rounded-full border-2 border-white shadow-md block animate-pulse"
+                                style={{ backgroundColor: color.hex_code }}
+                                title={color.name && color.name !== color.hex_code ? color.name : color.hex_code}
+                              />
+                            )}
+                          </div>
+
+                          {/* Color image overlapping slightly if exists */}
+                          {color?.image_path && (
+                            <img
+                              src={color.image_path}
+                              alt="Color version"
+                              className="-mr-2.5 w-7 h-7 rounded-full border-2 border-white shadow-sm object-cover bg-gray-50 hover:scale-115 transition-transform cursor-pointer"
+                              title={`صورة اللون: ${color.name && color.name !== color.hex_code ? color.name : color.hex_code}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(color.image_path, "_blank", "noopener,noreferrer");
+                              }}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                    {order.items.length > 3 && (
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-white bg-gray-100 text-[10px] font-bold text-gray-600 shadow-sm z-0">
+                        +{order.items.length - 3}
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+                <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full mt-1">
+                  {order.items_count} {order.items_count === 1 ? "منتج" : "منتجات"}
+                </span>
+              </div>
+            </td>
             <td className="px-4 py-3 font-semibold text-secondary whitespace-nowrap">
               {parseFloat(order.total).toLocaleString()} ر.س
             </td>

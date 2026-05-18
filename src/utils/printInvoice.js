@@ -13,6 +13,7 @@ const ORDER_STATUS = {
   pending: "قيد الانتظار",
   confirmed: "تم التأكيد",
   processing: "قيد المعالجة",
+  in_progress: "قيد المعالجة", // RATIONALE: Support translation of backend 'in_progress' state for print layout.
   ready: "جاهز للشحن",
   shipped: "تم الشحن",
   delivered: "تم التسليم",
@@ -52,14 +53,28 @@ const formatMoney = (amount) =>
 const generateItemsRows = (items = []) =>
   items
     .map(
-      (item, idx) => `
+      (item, idx) => {
+        const color = item.product?.color;
+        // RATIONALE: Displaying the exact customer color choice on printed and PDF invoices is vital to avoid packing and shipping errors in the warehouse. We append the color indicator cleanly right below the product name.
+        const colorHtml = color ? `
+          <div class="invoice-item-color" style="display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 11px; color: ${THEME.mutedText}; font-weight: 500;">
+            <span>اللون:</span>
+            <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: ${color.hex_code}; border: 1px solid ${THEME.border}; shadow: 0 1px 2px rgba(0,0,0,0.1);"></span>
+            <strong>${safeText(color.name && color.name !== color.hex_code ? color.name : color.hex_code)}</strong>
+          </div>
+        ` : '';
+        return `
         <tr>
           <td class="cell index">${idx + 1}</td>
-          <td class="cell product">${safeText(item.product_name || "-")}</td>
+          <td class="cell product">
+            ${safeText(item.product_name || "-")}
+            ${colorHtml}
+          </td>
           <td class="cell center">${safeText(item.quantity || 0)}</td>
           <td class="cell number">${formatMoney(item.price)}</td>
           <td class="cell number total-cell">${formatMoney(item.item_total)}</td>
-        </tr>`,
+        </tr>`;
+      }
     )
     .join("");
 
