@@ -58,13 +58,27 @@ const getCustomerPhone = (order) =>
   order.user?.phone ||
   "";
 
+// RATIONALE: wa.me accepts +COUNTRYCODE… format. We normalise every
+// stored variant to +966XXXXXXXXX so Saudi numbers always open correctly.
 const normalizeWhatsappPhone = (phone) => {
   const digits = String(phone).replace(/\D/g, "");
-
   if (!digits) return "";
-  if (digits.startsWith("00")) return digits.slice(2);
-  if (digits.startsWith("0")) return `966${digits.slice(1)}`;
-  return digits;
+
+  // RATIONALE: Override the test number '01094138191' to redirect to '+966502588864' as requested by the user.
+  if (digits === "01094138191" || digits === "1094138191") {
+    return "+966502588864";
+  }
+
+  // 00966XXXXXXXXX  →  +966XXXXXXXXX
+  if (digits.startsWith("00966")) return `+966${digits.slice(5)}`;
+  // 009XXXXXXXXX (other country 00-prefix)  →  +9XXXXXXXXX
+  if (digits.startsWith("00")) return `+${digits.slice(2)}`;
+  // 966XXXXXXXXX (already has country code, no prefix)  →  +966XXXXXXXXX
+  if (digits.startsWith("966")) return `+${digits}`;
+  // 05XXXXXXXX (Saudi local with leading 0)  →  +96605XXXXXXXX
+  if (digits.startsWith("0")) return `+966${digits.slice(1)}`;
+  // 5XXXXXXXX (bare Saudi number, no leading 0)  →  +9665XXXXXXXX
+  return `+966${digits}`;
 };
 
 const openCustomerWhatsapp = (order) => {

@@ -9,6 +9,7 @@ import Card, {
 } from "../components/common/Card";
 import Table, { TableCell, TableRow } from "../components/common/Table";
 import Button from "../components/common/Button";
+import ConfirmModal from "../components/common/ConfirmModal";
 
 // ─── Reusable Add/Edit Modal ──────────────────────────────────────────────────
 const TypeModal = ({
@@ -212,6 +213,9 @@ const ProductTypes = () => {
   const [wtSubmitting, setWtSubmitting] = useState(false);
   const [wtDeletingId, setWtDeletingId] = useState(null);
 
+  // Delete confirm state
+  const [confirmDelete, setConfirmDelete] = useState(null); // { type: "product" | "wood", id: any }
+
   // ── Product Types CRUD ────
   const fetchProductTypes = useCallback(async () => {
     try {
@@ -244,18 +248,8 @@ const ProductTypes = () => {
     }
   };
 
-  const handlePtDelete = async (id) => {
-    if (!window.confirm("هل أنت متأكد من حذف هذا النوع؟")) return;
-    try {
-      setPtDeletingId(id);
-      await productTypesService.deleteProductType(id);
-      toast.success("تم حذف نوع المنتج");
-      fetchProductTypes();
-    } catch {
-      toast.error("فشل حذف نوع المنتج");
-    } finally {
-      setPtDeletingId(null);
-    }
+  const handlePtDelete = (id) => {
+    setConfirmDelete({ type: "product", id });
   };
 
   // ── Wood Types CRUD ───────
@@ -290,17 +284,39 @@ const ProductTypes = () => {
     }
   };
 
-  const handleWtDelete = async (id) => {
-    if (!window.confirm("هل أنت متأكد من حذف هذا النوع؟")) return;
-    try {
-      setWtDeletingId(id);
-      await productTypesService.deleteWoodType(id);
-      toast.success("تم حذف نوع الخشب");
-      fetchWoodTypes();
-    } catch {
-      toast.error("فشل حذف نوع الخشب");
-    } finally {
-      setWtDeletingId(null);
+  const handleWtDelete = (id) => {
+    setConfirmDelete({ type: "wood", id });
+  };
+
+  const executeDelete = async () => {
+    if (!confirmDelete) return;
+    const { type, id } = confirmDelete;
+    setConfirmDelete(null);
+
+    if (type === "product") {
+      try {
+        setPtDeletingId(id);
+        await productTypesService.deleteProductType(id);
+        toast.success("تم حذف نوع المنتج");
+        fetchProductTypes();
+      } catch (err) {
+        const errorMsg = err?.message || err?.error || (typeof err === "string" ? err : "فشل حذف نوع المنتج");
+        toast.error(errorMsg);
+      } finally {
+        setPtDeletingId(null);
+      }
+    } else {
+      try {
+        setWtDeletingId(id);
+        await productTypesService.deleteWoodType(id);
+        toast.success("تم حذف نوع الخشب");
+        fetchWoodTypes();
+      } catch (err) {
+        const errorMsg = err?.message || err?.error || (typeof err === "string" ? err : "فشل حذف نوع الخشب");
+        toast.error(errorMsg);
+      } finally {
+        setWtDeletingId(null);
+      }
     }
   };
 
@@ -414,6 +430,19 @@ const ProductTypes = () => {
         isLoading={wtSubmitting}
         title={wtEditing ? "تعديل نوع الخشب" : "إضافة نوع خشب جديد"}
       />
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <ConfirmModal
+          title={confirmDelete.type === "product" ? "حذف نوع المنتج" : "حذف نوع الخشب"}
+          message="هل أنت متأكد من حذف هذا النوع؟ لا يمكن التراجع عن هذا الإجراء."
+          confirmLabel="حذف"
+          cancelLabel="إلغاء"
+          onCancel={() => setConfirmDelete(null)}
+          onConfirm={executeDelete}
+          danger
+        />
+      )}
     </div>
   );
 };

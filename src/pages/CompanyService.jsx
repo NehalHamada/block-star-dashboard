@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import partnersService from "../services/partnersService";
 import toast from "react-hot-toast";
+import ConfirmModal from "../components/common/ConfirmModal";
 
 // ── Image picker ────────────────────────────────────────────────────────────
 const ImagePicker = ({ currentUrl, previewUrl, onFileChange }) => (
@@ -305,8 +306,16 @@ const CompanyService = () => {
     fetchServices();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("هل أنت متأكد من حذف هذه الخدمة؟")) return;
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
+  const handleDelete = (id) => {
+    setConfirmDeleteId(id);
+  };
+
+  const executeDelete = async () => {
+    if (!confirmDeleteId) return;
+    const id = confirmDeleteId;
+    setConfirmDeleteId(null);
     setDeleting(id);
     setDeleteError(null);
     try {
@@ -394,6 +403,19 @@ const CompanyService = () => {
           service={modal === "add" ? null : modal}
           onClose={() => setModal(null)}
           onSaved={handleSaved}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {confirmDeleteId && (
+        <ConfirmModal
+          title="حذف الخدمة"
+          message="هل أنت متأكد من حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء."
+          confirmLabel="حذف"
+          cancelLabel="إلغاء"
+          onCancel={() => setConfirmDeleteId(null)}
+          onConfirm={executeDelete}
+          danger
         />
       )}
     </div>

@@ -1,9 +1,24 @@
 import { memo } from "react";
-import { X, Plus, Layers } from "lucide-react";
+import { X, Plus, Layers, FileText } from "lucide-react";
 import { Controller } from "react-hook-form";
 
 const inputCls = () =>
   "w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-secondary bg-white transition-colors hover:border-gray-300";
+
+const formatFileUrl = (url) => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  const cleanUrl = url.startsWith("/") ? url : `/${url}`;
+  return `https://wooden.ahdafweb.com${cleanUrl}`;
+};
+
+const getFileNameFromUrl = (url) => {
+  if (!url) return "";
+  const parts = url.split("/");
+  return parts[parts.length - 1] || "catalog.pdf";
+};
 
 const SectionLabel = ({ label }) => (
   <div className="flex items-center gap-2 mb-3">
@@ -115,6 +130,7 @@ const DetailsTab = memo(({
   featureEnFields, newFeatureEn, onNewFeatureEn, onAddFeatureEn, onRemoveFeatEn,
   specFields, newSpecKey, newSpecVal, onNewSpecKey, onNewSpecVal, onAddSpec, onRemoveSpec,
   specEnFields, newSpecKeyEn, newSpecValEn, onNewSpecKeyEn, onNewSpecValEn, onAddSpecEn, onRemoveSpecEn,
+  pdfFile, currentPdfUrl, onPdfChange, onClearPdf,
 }) => (
   <>
     {/* Features */}
@@ -184,6 +200,62 @@ const DetailsTab = memo(({
           placeholderVal="Value"
           dir="ltr"
         />
+      </div>
+    </div>
+
+    {/* Catalogue (PDF) */}
+    <div className="pt-4 border-t border-gray-100">
+      <SectionLabel label="الكاتالوج (PDF)" />
+      <div className="mt-2 bg-gray-50 border border-dashed border-gray-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+        {pdfFile || currentPdfUrl ? (
+          <div className="flex items-center gap-3 w-full max-w-md bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+            <div className="p-2 bg-red-50 text-red-500 rounded-lg shrink-0">
+              <FileText size={20} />
+            </div>
+            <div className="flex-1 min-w-0 text-right">
+              <p className="text-sm font-semibold text-gray-700 truncate">
+                {pdfFile ? pdfFile.name : getFileNameFromUrl(currentPdfUrl)}
+              </p>
+              <p className="text-xs text-gray-400">
+                {pdfFile ? `${(pdfFile.size / 1024 / 1024).toFixed(2)} MB` : "ملف PDF"}
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {currentPdfUrl && (
+                <a
+                  href={formatFileUrl(currentPdfUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold text-secondary hover:underline px-2.5 py-1.5 bg-secondary/5 rounded-lg transition-colors"
+                >
+                  عرض
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={onClearPdf}
+                className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                title="إزالة الكاتالوج"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center cursor-pointer py-4 w-full">
+            <div className="w-12 h-12 rounded-full bg-secondary/5 flex items-center justify-center mb-2.5">
+              <FileText className="text-secondary" size={22} />
+            </div>
+            <span className="text-sm font-semibold text-gray-700">اضغط لرفع ملف الكاتالوج</span>
+            <span className="text-xs text-gray-400 mt-1">تنسيق PDF فقط، بحد أقصى 15 ميجابايت</span>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={onPdfChange}
+              className="hidden"
+            />
+          </label>
+        )}
       </div>
     </div>
   </>

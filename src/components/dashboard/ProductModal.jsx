@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-hot-toast";
 import { productSchema } from "../../utils/validationSchemas";
 import { productService } from "../../services/productService";
 import BasicInfoTab from "./product/BasicInfoTab";
@@ -46,6 +47,8 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
     (initialData?.usage_ideas || []).map((i) => i.image_path).filter(Boolean),
   );
   const [video, setVideo] = useState(() => initialData?.videos?.[0]?.video_url || null);
+  const [pdfFile, setPdfFile] = useState(null);
+  const [currentPdfUrl, setCurrentPdfUrl] = useState(() => initialData?.pdf_file || null);
 
   // ── Temp chip inputs ───────────────────────────────────────────────────────
   const [newFeature, setNewFeature] = useState("");
@@ -113,6 +116,12 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
       colors: d?.colors?.map((c) => ({ name: c.name, hex_code: c.hex_code, image_path: c.image_path, order: c.order })) || [],
       sizes: d?.sizes?.map((s) => ({ size_name: s.size_name, dimensions: s.dimensions || "" })) || [],
     });
+    setCurrentPdfUrl(
+      Array.isArray(d?.file) && d.file.length > 0
+        ? d.file[0].file_path
+        : d?.pdf_file || null
+    );
+    setPdfFile(null);
   }, [initialData, reset, productTypes.length, woodTypes.length]);
 
   // ── Image / video handlers ─────────────────────────────────────────────────
@@ -133,6 +142,17 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
     e.target.value = "";
   };
 
+  const handlePdfChange = (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      if (f.type === "application/pdf") {
+        setPdfFile(f);
+      } else {
+        toast.error("يرجى اختيار ملف PDF صالح");
+      }
+    }
+  };
+
   // ── Adders ─────────────────────────────────────────────────────────────────
   const handleAddFeature = () => { if (newFeature.trim()) { addFeat(newFeature.trim()); setNewFeature(""); } };
   const handleAddFeatureEn = () => { if (newFeatureEn.trim()) { addFeatEn(newFeatureEn.trim()); setNewFeatureEn(""); } };
@@ -151,7 +171,7 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
 
   // ── Submit ─────────────────────────────────────────────────────────────────
   const onFormSubmit = (data) => {
-    onSubmit({ ...data, subcategory_id: subcategoryId, main_image: mainImage, images: extraImages, usage_ideas: usageIdeas, video });
+    onSubmit({ ...data, subcategory_id: subcategoryId, main_image: mainImage, images: extraImages, usage_ideas: usageIdeas, video, pdf_file: pdfFile });
   };
 
   const hasErrors = Object.keys(errors).length > 0;
@@ -235,6 +255,10 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
                 specEnFields={specEnFields}
                 newSpecKeyEn={newSpecKeyEn} newSpecValEn={newSpecValEn}
                 onNewSpecKeyEn={setNewSpecKeyEn} onNewSpecValEn={setNewSpecValEn} onAddSpecEn={handleAddSpecEn} onRemoveSpecEn={removeSpecEn}
+                pdfFile={pdfFile}
+                currentPdfUrl={currentPdfUrl}
+                onPdfChange={handlePdfChange}
+                onClearPdf={() => { setPdfFile(null); setCurrentPdfUrl(null); }}
               />
             )}
             {tab === "variants" && (

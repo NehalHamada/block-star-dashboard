@@ -14,6 +14,7 @@ import ProductModal from "../components/dashboard/ProductModal";
 import { productService } from "../services/productService";
 import { categoryService } from "../services/categoryService";
 import { subCategoryService } from "../services/subCategoryService";
+import ConfirmModal from "../components/common/ConfirmModal";
 
 const SubCategoryProducts = () => {
   const { categoryId, subCategoryId } = useParams();
@@ -28,6 +29,7 @@ const SubCategoryProducts = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fetchingProductId, setFetchingProductId] = useState(null); // id being loaded for edit
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const fetchCategory = useCallback(async () => {
     try {
@@ -108,16 +110,22 @@ const SubCategoryProducts = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("هل أنت متأكد من حذف هذا المنتج؟")) {
-      try {
-        await productService.delete(id);
-        toast.success("تم حذف المنتج بنجاح");
-        fetchProducts();
-      } catch (error) {
-        toast.error("فشل حذف المنتج");
-        console.error(error);
-      }
+  const handleDelete = (id) => {
+    setConfirmDeleteId(id);
+  };
+
+  const executeDelete = async () => {
+    if (!confirmDeleteId) return;
+    const id = confirmDeleteId;
+    setConfirmDeleteId(null);
+    try {
+      await productService.delete(id);
+      toast.success("تم حذف المنتج بنجاح");
+      fetchProducts();
+    } catch (error) {
+      const errorMsg = error?.message || error?.error || (typeof error === "string" ? error : "فشل حذف المنتج");
+      toast.error(errorMsg);
+      console.error(error);
     }
   };
 
@@ -316,6 +324,19 @@ const SubCategoryProducts = () => {
           initialData={editingProduct}
           isLoading={isSubmitting}
           subcategoryId={subCategoryId}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {confirmDeleteId && (
+        <ConfirmModal
+          title="حذف المنتج"
+          message="هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء."
+          confirmLabel="حذف"
+          cancelLabel="إلغاء"
+          onCancel={() => setConfirmDeleteId(null)}
+          onConfirm={executeDelete}
+          danger
         />
       )}
     </div>

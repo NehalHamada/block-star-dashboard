@@ -100,6 +100,11 @@ function buildFormData(data) {
     fd.append("video", data.video);
   }
 
+  // PDF Catalog file — new File upload only
+  if (data.pdf_file instanceof File) {
+    fd.append("pdf_file", data.pdf_file);
+  }
+
   // DEBUG: log everything in FormData
   console.log("[buildFormData] entries:");
   for (const [k, v] of fd.entries()) {
