@@ -20,7 +20,7 @@ const orderService = {
       if (filters.page) params.page = filters.page;
 
       const response = await axiosInstance.get("/admin/orders", { params });
-      console.log(response.data);
+      // console.log(response.data);
 
       return response.data; // { success, data: { current_page, data: [...], total, ... } }
     } catch (error) {

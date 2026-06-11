@@ -5,7 +5,7 @@ const artisticBoardsService = {
   async getAll() {
     try {
       const response = await axiosInstance.get("/my-artistic-boards");
-      console.log(response.data);
+      // console.log(response.data);
 
       return response.data;
     } catch (error) {

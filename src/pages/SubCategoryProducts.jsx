@@ -123,7 +123,10 @@ const SubCategoryProducts = () => {
       toast.success("تم حذف المنتج بنجاح");
       fetchProducts();
     } catch (error) {
-      const errorMsg = error?.message || error?.error || (typeof error === "string" ? error : "فشل حذف المنتج");
+      const errorMsg =
+        error?.message ||
+        error?.error ||
+        (typeof error === "string" ? error : "فشل حذف المنتج");
       toast.error(errorMsg);
       console.error(error);
     }
@@ -160,7 +163,7 @@ const SubCategoryProducts = () => {
     }
   };
   // console.log(filteredProducts[1].main_image);
-  console.log({ products });
+  // console.log({ products });
 
   return (
     <div className="space-y-6">

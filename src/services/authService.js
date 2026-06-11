@@ -8,7 +8,7 @@ export const authService = {
         email,
         password,
       });
-      console.log(response?.data?.data?.token);
+      // console.log(response?.data?.data?.token);
       if (response?.data?.data?.user?.role !== "admin") {
         toast.error("ليس لديك صلاحية الدخول");
         return { success: false, error: "ليس لديك صلاحية الدخول" };
