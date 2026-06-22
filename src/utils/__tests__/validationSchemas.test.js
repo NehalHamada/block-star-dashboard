@@ -167,4 +167,27 @@ describe("productSchema", () => {
     expect(result.success).toBe(true);
     expect(result.data.sizes[0].size_name).toBe("كبير");
   });
+
+  it("accepts valid phone_number or empty string", () => {
+    const res1 = productSchema.safeParse({ ...validProduct, phone_number: "" });
+    expect(res1.success).toBe(true);
+
+    const res2 = productSchema.safeParse({ ...validProduct, phone_number: "0512345678" });
+    expect(res2.success).toBe(true);
+    expect(res2.data.phone_number).toBe("0512345678");
+
+    const res3 = productSchema.safeParse({ ...validProduct, phone_number: "+966512345678" });
+    expect(res3.success).toBe(true);
+  });
+
+  it("rejects invalid phone_number formats", () => {
+    const res1 = productSchema.safeParse({ ...validProduct, phone_number: "abc" });
+    expect(res1.success).toBe(false);
+
+    const res2 = productSchema.safeParse({ ...validProduct, phone_number: "123" });
+    expect(res2.success).toBe(false);
+
+    const res3 = productSchema.safeParse({ ...validProduct, phone_number: "1234567890123456" });
+    expect(res3.success).toBe(false);
+  });
 });

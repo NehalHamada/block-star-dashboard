@@ -106,6 +106,20 @@ const BasicInfoTab = memo(({ register, errors, productTypes, woodTypes }) => (
       <ErrMsg err={errors.wood_type_id} />
     </div>
 
+    {/* WhatsApp Phone Number */}
+    <div>
+      {/* RATIONALE: LTR input direction is chosen for phone numbers to correctly align digit sequences and prefixes like "+" regardless of the Arabic UI layout. */}
+      <Label>رقم الواتساب (WhatsApp Number)</Label>
+      <input
+        type="tel"
+        {...register("phone_number")}
+        className={inputCls(errors.phone_number)}
+        placeholder="مثال: 05xxxxxxxx أو +9665xxxxxxxx"
+        dir="ltr"
+      />
+      <ErrMsg err={errors.phone_number} />
+    </div>
+
     {/* Description AR / EN */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div dir="rtl">

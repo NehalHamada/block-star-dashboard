@@ -71,4 +71,14 @@ export const productSchema = z.object({
     )
     .optional()
     .default([]),
+  phone_number: z
+    .string()
+    .optional()
+    .default("")
+    .refine(
+      (val) => !val || /^\+?[0-9]{7,15}$/.test(val),
+      {
+        message: "رقم الواتساب غير صحيح. يجب أن يتكون من أرقام فقط بطول من 7 إلى 15 رقمًا (مثال: 05xxxxxxxx)",
+      }
+    ),
 });

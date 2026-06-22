@@ -16,6 +16,9 @@ function buildFormData(data) {
   fd.append("stock_quantity", Number(data.stock_quantity) || 0);
   if (data.product_type_id) fd.append("product_type_id", data.product_type_id);
   if (data.wood_type_id) fd.append("wood_type_id", data.wood_type_id);
+  
+  // RATIONALE: We append phone_number to FormData (sending an empty string if not provided) to ensure the backend can either update or clear the stored WhatsApp number on the product.
+  fd.append("phone_number", data.phone_number || "");
 
   // original_price — only send when it's a valid positive number
   const origPrice = Number(data.original_price);

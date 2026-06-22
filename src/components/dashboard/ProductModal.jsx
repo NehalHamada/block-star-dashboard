@@ -78,7 +78,7 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
       usage: "", usage_en: "", product_type_id: "", wood_type_id: "",
       price: undefined, original_price: undefined, stock_quantity: 0,
       features: [], features_en: [], specifications: [], specifications_en: [],
-      colors: [], sizes: [],
+      colors: [], sizes: [], phone_number: "",
     },
   });
 
@@ -115,6 +115,7 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
       specifications_en: Array.isArray(d?.specifications_en) ? d.specifications_en : [],
       colors: d?.colors?.map((c) => ({ name: c.name, hex_code: c.hex_code, image_path: c.image_path, order: c.order })) || [],
       sizes: d?.sizes?.map((s) => ({ size_name: s.size_name, dimensions: s.dimensions || "" })) || [],
+      phone_number: d?.phone_number || "",
     });
     setCurrentPdfUrl(
       Array.isArray(d?.file) && d.file.length > 0
