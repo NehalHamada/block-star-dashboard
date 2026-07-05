@@ -14,6 +14,16 @@ export const subCategorySchema = z.object({
   name_en: z.string().min(1, "Subcategory name is required"),
   description: z.string().optional(),
   description_en: z.string().optional(),
+  category_id: z.string().optional(),
+});
+
+// ─── SubSubCategory ──────────────────────────────────────────────────────────
+export const subSubCategorySchema = z.object({
+  subcategory_id: z.string().min(1, "القسم الفرعي مطلوب"),
+  name: z.string().min(1, "اسم القسم الفرعي الفرعي مطلوب"),
+  name_en: z.string().min(1, "Sub-subcategory name is required"),
+  description: z.string().optional(),
+  description_en: z.string().optional(),
 });
 
 // ─── Product ──────────────────────────────────────────────────────────────────
@@ -26,6 +36,8 @@ export const productSchema = z.object({
   usage_en: z.string().optional().default(""),
   product_type_id: z.string().optional().default(""),
   wood_type_id: z.string().optional().default(""),
+  subcategory_id: z.string().optional().default(""),
+  sub_subcategory_id: z.string().optional().default(""),
   price: z.coerce
     .number({ invalid_type_error: "السعر يجب أن يكون رقمًا" })
     .positive("يجب أن يكون السعر أكبر من صفر"),

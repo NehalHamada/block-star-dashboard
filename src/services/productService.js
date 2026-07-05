@@ -6,6 +6,7 @@ function buildFormData(data) {
 
   // Scalar fields
   if (data.subcategory_id) fd.append("subcategory_id", data.subcategory_id);
+  if (data.sub_subcategory_id) fd.append("sub_subcategory_id", data.sub_subcategory_id);
   fd.append("name", data.name || "");
   fd.append("name_en", data.name_en || "");
   fd.append("description", data.description || "");
@@ -108,22 +109,18 @@ function buildFormData(data) {
     fd.append("pdf_file", data.pdf_file);
   }
 
-  // DEBUG: log everything in FormData
-  console.log("[buildFormData] entries:");
-  for (const [k, v] of fd.entries()) {
-    console.log(`  ${k}:`, v instanceof File ? `FILE: ${v.name}` : v);
-  }
 
   return fd;
 }
 
 export const productService = {
   // GET /products
-  async getAll(subcategoryId = null, categoryId = null) {
+  async getAll(subcategoryId = null, categoryId = null, subSubcategoryId = null) {
     try {
       const params = {};
       if (categoryId) params.category_id = categoryId;
       if (subcategoryId) params.subcategory_id = subcategoryId;
+      if (subSubcategoryId) params.sub_subcategory_id = subSubcategoryId;
       const response = await axiosInstance.get("/products", { params });
       return response.data;
     } catch (error) {
@@ -176,21 +173,12 @@ export const productService = {
   // POST /products  (form-data)
   async create(data) {
     try {
-      console.log({ data });
-
       const fd = buildFormData(data);
       // NOTE: Do NOT manually set Content-Type — axios sets it automatically
       // with the correct multipart boundary when a FormData instance is passed.
       const response = await axiosInstance.post("/products", fd);
       return response.data;
     } catch (error) {
-      console.error("[productService.create] Error:", error);
-      if (error.response) {
-        console.error(
-          "[productService.create] Response data:",
-          error.response.data,
-        );
-      }
       throw error.response?.data || error.message;
     }
   },
@@ -202,13 +190,6 @@ export const productService = {
       const response = await axiosInstance.post(`/products/${id}/update`, fd);
       return response.data;
     } catch (error) {
-      console.error("[productService.update] Error:", error);
-      if (error.response) {
-        console.error(
-          "[productService.update] Response data:",
-          error.response.data,
-        );
-      }
       throw error.response?.data || error.message;
     }
   },

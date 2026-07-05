@@ -11,6 +11,8 @@ const SubCategoryModal = ({
   onSubmit,
   initialData,
   isLoading,
+  showCategorySelect = false,
+  categories = [],
 }) => {
   const [preview, setPreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -20,10 +22,17 @@ const SubCategoryModal = ({
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(subCategorySchema),
-    defaultValues: { name: "", name_en: "", description: "", description_en: "" },
+    defaultValues: {
+      name: "",
+      name_en: "",
+      description: "",
+      description_en: "",
+      category_id: "",
+    },
   });
 
   useEffect(() => {
@@ -33,6 +42,7 @@ const SubCategoryModal = ({
         name_en: initialData?.name_en || "",
         description: initialData?.description || "",
         description_en: initialData?.description_en || "",
+        category_id: initialData?.category_id || initialData?.category?.id || "",
       });
     }
   }, [isOpen, initialData, reset]);
@@ -58,6 +68,10 @@ const SubCategoryModal = ({
   };
 
   const onFormSubmit = (data) => {
+    if (showCategorySelect && !data.category_id) {
+      setError("category_id", { type: "manual", message: "يرجى اختيار الفئة الرئيسية" });
+      return;
+    }
     onSubmit({ ...data, image: imageFile });
   };
 
@@ -82,6 +96,32 @@ const SubCategoryModal = ({
           onSubmit={handleSubmit(onFormSubmit)}
           className="p-4 space-y-4 text-black overflow-y-auto max-h-[80vh]"
         >
+          {/* Category Dropdown (Only when showCategorySelect is true) */}
+          {showCategorySelect && (
+            <div dir="rtl">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                الفئة الرئيسية <span className="text-red-500">*</span>
+              </label>
+              <select
+                {...register("category_id")}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white text-sm ${
+                  errors.category_id ? "border-red-500" : "border-gray-300"
+                }`}
+              >
+                <option value="">-- اختر الفئة الرئيسية --</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={String(cat.id)}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              {errors.category_id && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.category_id.message}
+                </p>
+              )}
+            </div>
+          )}
           {/* Name (AR) */}
           <div dir="rtl">
             <label className="block text-sm font-medium text-gray-700 mb-1">

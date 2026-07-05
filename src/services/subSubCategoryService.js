@@ -1,25 +1,22 @@
 import axiosInstance from "./axiosInstance";
 
-export const subCategoryService = {
-  // GET /categories/:categoryId/subcategories or GET /subcategories
-  async getAll(categoryId = null) {
+export const subSubCategoryService = {
+  // GET /sub-subcategories
+  async getAll() {
     try {
-      const url = categoryId
-        ? `/categories/${categoryId}/subcategories`
-        : "/subcategories";
-      const response = await axiosInstance.get(url);
+      const response = await axiosInstance.get("/sub-subcategories");
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;
     }
   },
 
-  // POST /subcategories
-  // Body (form-data): category_id (Text), name (Text), description (Text), image (File)
+  // POST /sub-subcategories
+  // Body (form-data): subcategory_id (Text), name (Text), name_en (Text), description (Text), description_en (Text), image (File)
   async create(data) {
     try {
       const formData = new FormData();
-      formData.append("category_id", data.category_id);
+      formData.append("subcategory_id", data.subcategory_id);
       formData.append("name", data.name || "");
       formData.append("name_en", data.name_en || "");
       formData.append("description", data.description || "");
@@ -28,18 +25,19 @@ export const subCategoryService = {
         formData.append("image", data.image);
       }
 
-      const response = await axiosInstance.post("/subcategories", formData);
+      const response = await axiosInstance.post("/sub-subcategories", formData);
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;
     }
   },
 
-  // POST /subcategories/:id/update
-  // Body (form-data): name (Text), description (Text), image (File – optional)
+  // POST /sub-subcategories/:id/update
+  // Body (form-data): subcategory_id (Text), name (Text), name_en (Text), description (Text), description_en (Text), image (File – optional)
   async update(id, data) {
     try {
       const formData = new FormData();
+      formData.append("subcategory_id", data.subcategory_id);
       formData.append("name", data.name || "");
       formData.append("name_en", data.name_en || "");
       formData.append("description", data.description || "");
@@ -49,7 +47,7 @@ export const subCategoryService = {
       }
 
       const response = await axiosInstance.post(
-        `/subcategories/${id}/update`,
+        `/sub-subcategories/${id}/update`,
         formData,
       );
       return response.data;
@@ -58,10 +56,10 @@ export const subCategoryService = {
     }
   },
 
-  // DELETE /subcategories/:id
+  // DELETE /sub-subcategories/:id
   async delete(id) {
     try {
-      const response = await axiosInstance.delete(`/subcategories/${id}`);
+      const response = await axiosInstance.delete(`/sub-subcategories/${id}`);
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;

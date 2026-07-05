@@ -16,7 +16,7 @@ const TABS = [
   { id: "variants", label: "الألوان والأحجام" },
 ];
 
-const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId }) => {
+const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId, subSubcategoryId }) => {
   const [tab, setTab] = useState("basic");
 
   // ── Types from API ─────────────────────────────────────────────────────────
@@ -172,7 +172,16 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
 
   // ── Submit ─────────────────────────────────────────────────────────────────
   const onFormSubmit = (data) => {
-    onSubmit({ ...data, subcategory_id: subcategoryId, main_image: mainImage, images: extraImages, usage_ideas: usageIdeas, video, pdf_file: pdfFile });
+    onSubmit({
+      ...data,
+      subcategory_id: subcategoryId,
+      sub_subcategory_id: subSubcategoryId || initialData?.sub_subcategory_id || initialData?.sub_subcategory?.id || "",
+      main_image: mainImage,
+      images: extraImages,
+      usage_ideas: usageIdeas,
+      video,
+      pdf_file: pdfFile
+    });
   };
 
   const hasErrors = Object.keys(errors).length > 0;

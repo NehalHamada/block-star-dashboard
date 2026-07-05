@@ -11,6 +11,8 @@ import { Toaster } from "react-hot-toast";
 import Category from "./pages/Category";
 import SubCategories from "./pages/SubCategories";
 import SubCategoryProducts from "./pages/SubCategoryProducts";
+import SubSubCategories from "./pages/SubSubCategories";
+import SubSubCategoryProducts from "./pages/SubSubCategoryProducts";
 import Reviews from "./pages/Reviews.jsx";
 import AboutAs from "./pages/AboutAs.jsx";
 import ContactMessage from "./pages/ContactMessage.jsx";
@@ -42,6 +44,7 @@ function App() {
           <Route path="coupons" element={<Coupons />} />
           <Route path="category" element={<Category />} />
           <Route path="category/:id" element={<Category />} />
+          <Route path="subcategories" element={<SubCategories />} />
           <Route
             path="category/:categoryId/subcategories"
             element={<SubCategories />}
@@ -49,6 +52,11 @@ function App() {
           <Route
             path="category/:categoryId/subcategories/:subCategoryId/products"
             element={<SubCategoryProducts />}
+          />
+          <Route path="sub-subcategories" element={<SubSubCategories />} />
+          <Route
+            path="sub-subcategories/:subSubCategoryId/products"
+            element={<SubSubCategoryProducts />}
           />
           <Route path="orders" element={<Orders />} />
           <Route path="users" element={<Users />} />
