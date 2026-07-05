@@ -17,29 +17,113 @@ const ErrMsg = ({ err }) =>
 /**
  * BasicInfoTab — names, prices, stock, types, descriptions, usage
  */
-const BasicInfoTab = memo(({ register, errors, productTypes, woodTypes }) => (
-  <>
-    {/* Name AR / EN */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div dir="rtl">
-        <Label required>اسم المنتج (AR)</Label>
-        <input
-          {...register("name")}
-          className={inputCls(errors.name)}
-          placeholder="مثال: كنبة خشبية فاخرة"
-        />
-        <ErrMsg err={errors.name} />
+const BasicInfoTab = memo(
+  ({
+    register,
+    errors,
+    productTypes,
+    woodTypes,
+    showCategorySelectors = false,
+    categories = [],
+    subcategories = [],
+    subSubcategories = [],
+    selectedCategory = "",
+    setSelectedCategory,
+    selectedSubCategory = "",
+    setSelectedSubCategory,
+    selectedSubSubCategory = "",
+    setSelectedSubSubCategory,
+  }) => (
+    <>
+      {/* Category, Subcategory, and Sub-subcategory selectors (conditional) */}
+      {/* RATIONALE: Renders selectors when adding/editing products from All Products dashboard tab where category context is not predetermined */}
+      {showCategorySelectors && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 mb-4">
+          <div>
+            <Label required>الفئة الرئيسية</Label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setSelectedSubCategory("");
+                setSelectedSubSubCategory("");
+              }}
+              className={inputCls(errors.category_id)}
+            >
+              <option value="">-- اختر الفئة --</option>
+              {categories.map((c) => (
+                <option key={c.id} value={String(c.id)}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <Label required>القسم الفرعي</Label>
+            <select
+              value={selectedSubCategory}
+              onChange={(e) => {
+                setSelectedSubCategory(e.target.value);
+                setSelectedSubSubCategory("");
+              }}
+              disabled={!selectedCategory}
+              className={inputCls(errors.subcategory_id)}
+            >
+              <option value="">-- اختر القسم الفرعي --</option>
+              {subcategories
+                .filter((s) => String(s.category_id || s.category?.id) === String(selectedCategory))
+                .map((s) => (
+                  <option key={s.id} value={String(s.id)}>
+                    {s.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div>
+            <Label>القسم الفرعي الفرعي</Label>
+            <select
+              value={selectedSubSubCategory}
+              onChange={(e) => setSelectedSubSubCategory(e.target.value)}
+              disabled={!selectedSubCategory}
+              className={inputCls(errors.sub_subcategory_id)}
+            >
+              <option value="">-- اختر القسم الفرعي الفرعي --</option>
+              {subSubcategories
+                .filter((ss) => String(ss.subcategory_id || ss.subcategory?.id) === String(selectedSubCategory))
+                .map((ss) => (
+                  <option key={ss.id} value={String(ss.id)}>
+                    {ss.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* Name AR / EN */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div dir="rtl">
+          <Label required>اسم المنتج (AR)</Label>
+          <input
+            {...register("name")}
+            className={inputCls(errors.name)}
+            placeholder="مثال: كنبة خشبية فاخرة"
+          />
+          <ErrMsg err={errors.name} />
+        </div>
+        <div dir="ltr">
+          <Label required>Product Name (EN)</Label>
+          <input
+            {...register("name_en")}
+            className={inputCls(errors.name_en)}
+            placeholder="e.g., Luxury Wooden Sofa"
+          />
+          <ErrMsg err={errors.name_en} />
+        </div>
       </div>
-      <div dir="ltr">
-        <Label required>Product Name (EN)</Label>
-        <input
-          {...register("name_en")}
-          className={inputCls(errors.name_en)}
-          placeholder="e.g., Luxury Wooden Sofa"
-        />
-        <ErrMsg err={errors.name_en} />
-      </div>
-    </div>
+
 
     {/* Price / Original price */}
     <div className="grid grid-cols-2 gap-4">

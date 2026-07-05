@@ -26,6 +26,7 @@ import ProductTypes from "./pages/ProductTypes.jsx";
 import ArtisticBoards from "./pages/ArtisticBoards.jsx";
 import CompanyInformation from "./pages/CompanyInformation.jsx";
 import ShippingManagement from "./pages/ShippingManagement.jsx";
+import AllProducts from "./pages/AllProducts.jsx";
 
 function App() {
   return (
@@ -73,6 +74,7 @@ function App() {
           <Route path="artistic-boards" element={<ArtisticBoards />} />
           <Route path="company-info" element={<CompanyInformation />} />
           <Route path="shipping" element={<ShippingManagement />} />
+          <Route path="products" element={<AllProducts />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -62,6 +62,7 @@ const SIDEBAR_ITEMS = [
     name: "المتجر",
     icon: ShoppingBag,
     children: [
+      { name: "كل المنتجات", icon: PackageOpen, path: "/products" },
       { name: "الفئات", icon: Grid3x3, path: "/category" },
       { name: "الأقسام الفرعية", icon: Grid3x3, path: "/subcategories" },
       { name: "الأقسام الفرعية الفرعية", icon: Grid3x3, path: "/sub-subcategories" },

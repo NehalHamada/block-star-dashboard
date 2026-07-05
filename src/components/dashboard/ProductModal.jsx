@@ -4,6 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { productSchema } from "../../utils/validationSchemas";
 import { productService } from "../../services/productService";
+import { categoryService } from "../../services/categoryService";
+import { subCategoryService } from "../../services/subCategoryService";
+import { subSubCategoryService } from "../../services/subSubCategoryService";
 import BasicInfoTab from "./product/BasicInfoTab";
 import MediaTab from "./product/MediaTab";
 import DetailsTab from "./product/DetailsTab";
@@ -23,10 +26,44 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
   const [productTypes, setProductTypes] = useState([]);
   const [woodTypes, setWoodTypes] = useState([]);
 
+  // ── Category / Subcategory states (conditional) ────────────────────────────
+  // RATIONALE: Needed to dynamically select categories, subcategories and sub-subcategories when adding a product from 'All Products'
+  const showCategorySelectors = !subcategoryId;
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [subSubcategories, setSubSubcategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [selectedSubSubCategory, setSelectedSubSubCategory] = useState("");
+
   useEffect(() => {
     productService.getProductTypes().then((r) => setProductTypes(r.data || [])).catch(() => {});
     productService.getWoodTypes().then((r) => setWoodTypes(r.data || [])).catch(() => {});
-  }, []);
+    
+    if (showCategorySelectors) {
+      categoryService.getAll().then((r) => setCategories(r.data || [])).catch(() => {});
+      subCategoryService.getAll().then((r) => setSubcategories(r.data || [])).catch(() => {});
+      subSubCategoryService.getAll().then((r) => setSubSubcategories(r.data || [])).catch(() => {});
+    }
+  }, [showCategorySelectors]);
+
+  // Seed category selectors when initialData is loaded
+  useEffect(() => {
+    if (initialData && showCategorySelectors && subcategories.length > 0) {
+      const prodSubId = initialData.subcategory_id || initialData.subcategory?.id;
+      if (prodSubId) {
+        setSelectedSubCategory(String(prodSubId));
+        const foundSub = subcategories.find((s) => String(s.id) === String(prodSubId));
+        if (foundSub) {
+          setSelectedCategory(String(foundSub.category_id || foundSub.category?.id || ""));
+        }
+      }
+      const prodSubSubId = initialData.sub_subcategory_id || initialData.sub_subcategory?.id;
+      if (prodSubSubId) {
+        setSelectedSubSubCategory(String(prodSubSubId));
+      }
+    }
+  }, [initialData, showCategorySelectors, subcategories]);
 
   // ── Media state ────────────────────────────────────────────────────────────
   const [mainImage, setMainImage] = useState(null);
@@ -172,10 +209,20 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
 
   // ── Submit ─────────────────────────────────────────────────────────────────
   const onFormSubmit = (data) => {
+    if (showCategorySelectors) {
+      if (!selectedCategory) {
+        toast.error("يرجى اختيار الفئة الرئيسية");
+        return;
+      }
+      if (!selectedSubCategory) {
+        toast.error("يرجى اختيار القسم الفرعي");
+        return;
+      }
+    }
     onSubmit({
       ...data,
-      subcategory_id: subcategoryId,
-      sub_subcategory_id: subSubcategoryId || initialData?.sub_subcategory_id || initialData?.sub_subcategory?.id || "",
+      subcategory_id: subcategoryId || selectedSubCategory || "",
+      sub_subcategory_id: subSubcategoryId || selectedSubSubCategory || initialData?.sub_subcategory_id || initialData?.sub_subcategory?.id || "",
       main_image: mainImage,
       images: extraImages,
       usage_ideas: usageIdeas,
@@ -234,6 +281,16 @@ const ProductModal = ({ onClose, onSubmit, initialData, isLoading, subcategoryId
                 errors={errors}
                 productTypes={productTypes}
                 woodTypes={woodTypes}
+                showCategorySelectors={showCategorySelectors}
+                categories={categories}
+                subcategories={subcategories}
+                subSubcategories={subSubcategories}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                selectedSubCategory={selectedSubCategory}
+                setSelectedSubCategory={setSelectedSubCategory}
+                selectedSubSubCategory={selectedSubSubCategory}
+                setSelectedSubSubCategory={setSelectedSubSubCategory}
               />
             )}
             {tab === "media" && (
